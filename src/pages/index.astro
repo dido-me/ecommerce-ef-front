@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro'
 import { medusa } from '@src/medusa/medusa_conect'
 
 const products = await medusa.admin.products
-  .list({ limit: 8 })
+  .list()
   .then(({ products }) => products);
 ---
 
