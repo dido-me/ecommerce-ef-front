@@ -1,0 +1,31 @@
+---
+import CardProduct from '@src/components/CardProduct.astro'
+import Layout from '../layouts/Layout.astro'
+import { medusa } from '@src/medusa/medusa_conect'
+
+const products = await medusa.admin.products
+  .list({ limit: 8 })
+  .then(({ products }) => products);
+---
+
+<Layout title="EF SYSTEMAS EIRL TIENDA">
+    <section class="flex flex-col gap-10 w-[80%] m-auto">
+        <h1 class="text-3xl font-bold">Productos Destacados</h1>
+
+        <!-- cards -->
+        <div class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
+            {
+                products.map((product) => (
+                    <CardProduct
+                        id={product.id}
+                        handle={product.handle}
+                        img={product.thumbnail}
+                        price={product.variants[0].prices[0].amount}
+                        title={product.title}
+                    />
+                ))
+            }
+        </div>
+        <!-- cards -->
+    </section>
+</Layout>
