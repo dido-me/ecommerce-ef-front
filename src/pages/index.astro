@@ -15,15 +15,20 @@ const products = await medusa.admin.products
         <!-- cards -->
         <div class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
             {
-                products.map((product) => (
-                    <CardProduct
-                        id={product.id}
-                        handle={product.handle}
-                        img={product.thumbnail}
-                        price={product.variants[0].prices[0].amount}
-                        title={product.title}
-                    />
-                ))
+                products.map((product) => {
+                  const price =
+                        product.variants?.[0]?.prices?.[0]?.amount || 0
+
+                  return (
+                        <CardProduct
+                            id={product.id}
+                            handle={product.handle}
+                            img={product.thumbnail}
+                            price={price}
+                            title={product.title}
+                        />
+                  )
+                })
             }
         </div>
         <!-- cards -->
