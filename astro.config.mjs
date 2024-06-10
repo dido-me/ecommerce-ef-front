@@ -9,7 +9,6 @@ export default defineConfig({
   output: 'server',
   adapter: vercel(),
   image: {
-    domains: ['res.cloudinary.com'],
     remotePatterns: [{ protocol: 'https' }]
   }
 })
