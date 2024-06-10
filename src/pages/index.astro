@@ -16,6 +16,7 @@ const products = await medusa.admin.products
         <div class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
             {
                 products.map((product) => {
+                  //   refacotorizar y reutilizar
                   const price =
                         product.variants?.[0]?.prices?.[0]?.amount || 0
 
@@ -23,7 +24,7 @@ const products = await medusa.admin.products
                         <CardProduct
                             id={product.id}
                             handle={product.handle}
-                            img={product.thumbnail}
+                            img={product.thumbnail || '/img/placeholder.png'}
                             price={price}
                             title={product.title}
                         />

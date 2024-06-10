@@ -1,0 +1,213 @@
+<div
+    x-show="modelOpen"
+    class="fixed inset-0 z-50 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+>
+    <div
+        class="flex items-end justify-center min-h-screen px-4 text-center md:items-center sm:block sm:p-0"
+    >
+        <div
+            x-cloak
+            @click="modelOpen = false"
+            x-show="modelOpen"
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-40"
+            aria-hidden="true"
+        >
+        </div>
+
+        <div
+            x-cloak
+            x-show="modelOpen"
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            class="inline-block
+            w-full max-w-xl px-8 pt-8 pb-4 my-20 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl 2xl:max-w-2xl"
+        >
+            <div
+                class="flex flex-col items-center justify-between space-x-4"
+                x-data="search"
+            >
+                <!-- search -->
+                <div class="w-full z-50 relative mx-auto">
+                    <div
+                        class="bg-white w-full h-16 rounded-xl mb-3 shadow-lg p-2"
+                    >
+                        <input
+                            type="text"
+                            placeholder="Busca un producto..."
+                            x-model="query"
+                            class="w-full h-full text-2xl rounded-lg focus:outline-none focus:ring focus:border-blue-300 py-2 px-4"
+                        />
+                    </div>
+
+                    <div
+                        x-show="!isSearch"
+                        class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+                        role="alert"
+                    >
+                        <span class="font-medium">Alerta!</span> Colocar 3 letras
+                        para inicar la busqueda.
+                    </div>
+
+                    <div
+                        class="bg-white w-full rounded-xl shadow-xl overflow-hidden max-h-[50rem] scrollable-content"
+                        x-show="isSearch"
+                    >
+                        <h2 class="p-4">
+                            Resultados: <span x-text="results.length"></span>
+                        </h2>
+                        <template x-for="result in results">
+                            <!-- items -->
+                            <a
+                                class="w-full flex p-3 pl-4 items-center hover:bg-gray-300 rounded-lg cursor-pointer"
+                                :href="`/product/${result.objectID}/${result.handle}`"
+                            >
+                                <div class="mr-4">
+                                    <div
+                                        class="h-9 w-9 rounded-sm flex items-center justify-center text-3xl"
+                                    >
+                                        <img
+                                            :src="result.thumbnail"
+                                            width={36}
+                                            height={36}
+                                            :alt="result.title"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        class="font-bold text-lg title"
+                                        x-html="result.title"
+                                    >
+                                    </div>
+                                    <div
+                                        class="text-xs text-gray-500 w-full overflow-hidden"
+                                    >
+                                        <span
+                                            class="mr-2"
+                                            x-text="result.collection.title"
+                                        ></span>
+                                        <span class="mr-2"> - </span>
+                                        <span
+                                            class="mr-2"
+                                            x-text="result.objectID"></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                    <p class="mt-8">
+                        Busca por nombre de producto o Categoria.
+                    </p>
+                </div>
+                <!-- search -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .scrollable-content {
+        overflow: scroll;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+</style>
+
+<script>
+import Alpine from 'alpinejs'
+import algoliasearch from 'algoliasearch/lite'
+
+    interface HitsCollectionProps {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        deleted_at: Date | null;
+        title: string;
+        handle: string;
+        metadata: any;
+    }
+
+    interface HitsProps {
+        objectID: string;
+        thumbnail: string;
+        title: string;
+        handle: string;
+        collection: HitsCollectionProps;
+    }
+
+const searchClient = algoliasearch(
+  '9XADO5FD4H',
+  '63409dff404d30aeb381393fdfc6bf77'
+)
+const INDEX_NAME = 'Prod_products'
+
+const handleSearch = searchClient.initIndex(INDEX_NAME)
+
+document.addEventListener('alpine:init', () => {
+  Alpine.data('search', function () {
+    return {
+      query: '',
+      isSearch: false,
+      results: new Proxy<Array<HitsProps>>([], {
+        get (target, prop) {
+          return target[prop as keyof Array<HitsProps>]
+        }
+      }),
+
+      init () {
+        this.watchQuery()
+      },
+
+      watchQuery () {
+        this.$watch('query', async (query) => {
+          if (query === '') {
+            this.results = []
+            return
+          }
+
+          if (query.length < 3) {
+            this.results = []
+            this.isSearch = false
+            return
+          }
+
+          this.isSearch = true
+
+          try {
+            const { hits } = await handleSearch.search<HitsProps>(query)
+
+            this.results = hits.map((hit) => {
+              hit.title = hit._highlightResult?.title?.value || hit.title
+              return hit
+            })
+          } catch (error) {
+            this.results = []
+            console.error(
+              'Error fetching search results:',
+              error
+            )
+          }
+        })
+      }
+    }
+  })
+})
+</script>

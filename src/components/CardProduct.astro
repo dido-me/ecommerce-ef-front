@@ -1,14 +1,17 @@
 ---
+import { Image } from 'astro:assets'
+
 interface Props {
     id: string | null | undefined;
     handle: string | null | undefined;
-    img: string | null | undefined;
+    img: string;
     title: string | undefined;
     price: number;
 }
 
 const { id, handle, img, title, price } = Astro.props as Props
 
+//   refacotorizar y reutilizar
 const formattedPrice = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD'
@@ -22,11 +25,12 @@ const formattedPrice = new Intl.NumberFormat('en-US', {
         href={`/product/${id}/${handle}`}
         class="h-[75%] grid place-items-center"
     >
-        <img
+        <Image
             src={img}
             alt={`Producto de efystemas - ${title}`}
             class="w-[20rem] rounded-t-lg p-8 object-center object-cover"
-            transition:name={id!}
+            width={320}
+            height={320}
         />
     </a>
     <div class="px-5 pb-5" class="h-[25%]">

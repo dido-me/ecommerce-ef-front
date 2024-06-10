@@ -25,9 +25,18 @@ const { title } = Astro.props as Props;
 		<LayoutPubli>
 			<slot />
 		</LayoutPubli>
-	</body><style is:global>
-		html {
-			font-family: "Onest Variable", system-ui, sans-serif;
-		}
-	</style>
+	</body>
 </html>
+
+<style is:global>
+	html {
+		font-family: "Onest Variable", system-ui, sans-serif;
+	}
+
+	em {
+		background-color: #fdfd96;
+		color: #8a5d00;
+		font-style: normal;
+		font-weight: bold;
+	}
+</style>

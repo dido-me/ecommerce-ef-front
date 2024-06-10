@@ -1,6 +1,7 @@
 ---
 import Layout from '@src/layouts/Layout.astro'
 import { medusa } from '@src/medusa/medusa_conect'
+import { Image } from 'astro:assets'
 
 const { id } = Astro.params
 
@@ -12,6 +13,7 @@ const product = await medusa.admin.products
   .retrieve(id)
   .then(({ product }) => product)
 
+//   refacotorizar y reutilizar
 const formattedPrice = product.variants?.[0]?.prices?.[0]?.amount
   ? new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -30,20 +32,22 @@ const urlProduct = Astro.request.url;
                     product.images.length > 0 && (
                         <div class="flex gap-2 px-8">
                             {product.images.map((image) => (
-                                <img
+                                <Image
                                     src={image.url}
                                     alt={product.title}
                                     class="w-20 h-20 rounded-lg object-center object-cover drop-shadow-sm"
+                                    width={80}
+                                    height={80}
                                 />
                             ))}
                         </div>
                     )
                 }
-                <img
-                    src={product.thumbnail}
+                <Image
+                    src={product.thumbnail || 'd'}
                     alt={product.title}
                     class="w-full rounded-t-lg p-8 object-center object-cover drop-shadow-sm"
-                    transition:name={id}
+                    inferSize={true}
                 />
             </div>
             <div class="flex-1 p-8 flex flex-col gap-12">

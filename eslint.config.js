@@ -16,7 +16,8 @@ export default [
   ...compat.extends('eslint-config-standard'),
   {
     rules: {
-      'no-tabs': 'off'
+      'no-tabs': 'off',
+      'no-template-curly-in-string': 'off'
     }
   }
 ]

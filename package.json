@@ -18,8 +18,10 @@
     "@fontsource-variable/onest": "^5.0.4",
     "@medusajs/medusa-js": "^6.1.8",
     "@types/alpinejs": "^3.13.10",
+    "algoliasearch": "^4.23.3",
     "alpinejs": "^3.14.0",
     "astro": "^4.10.0",
+    "instantsearch.js": "^4.71.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5"
   },
